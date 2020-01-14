@@ -1,225 +1,489 @@
-import java.io.IOException;
-import java.util.Scanner;
-public class Game{
-	
-	static boolean nextday=true; //是否有一天
-	
-	static int[] watermelon_decay_count=new int[999999];  //若那一天的array為1，代表濕度不合適，判斷是否造成衰敗
-	static int[] mulberry_decay_count=new int[999999];    //若那一天的array為1，代表濕度不合適，判斷是否造成衰敗
-	
-	static boolean watermelon_decay;  //西瓜是否衰敗
-	static boolean mulberry_decay;   //桑樹是衰敗
-	
-	static boolean watermelon_die;   //西瓜是否死亡
-	static boolean mulberry_die;     //桑樹是死亡
+import java.util.*;
+import java.io.*; 
 
-	
-	static Scanner scanner=new Scanner(System.in);
-	
-	public static void main(String[] args) throws IOException {
-		
-		player player1=new player();
-		environment environment1=new environment();
-		vegetable vegetable1=new vegetable();
-		
-		
-		player1.setenergy();                   //初始化
-		player1.setmoney();                    //初始化
-		player1.setamount_watermelonseed();    //初始化
-		player1.setamount_mulberryseed();      //初始化
-		player1.setamount_sand();              //初始化
-		player1.setamount_clay();              //初始化
-		player1.setamount_loam();              //初始化
-		player1.setamount_watermelonplanted(); //初始化
-		player1.setamount_mulberryplanted();   //初始化
-		player1.setamount_redbull();           //初始化
-		
-		environment1.setday();                 //初始化
-		environment1.set_moisture();           //初始化
-		environment1.setmoisture_endday();     //初始化
-		
-		
-		System.out.println("歡迎來到農場物語");
-		System.out.println("請輸入角色名稱：");
-		player1.setname(scanner.nextLine());
-		
-		
-		while(nextday==true) {
-		
-			
-			System.out.println("第"+environment1.getday()+"天");
-			System.out.println("天氣："+environment1.getweather()+" 濕度："+environment1.get_moisture());
-			if(vegetable1.getwatermelon_day_planted()==vegetable1.getwatermelon_day()) {  //西瓜剛好成熟
-				System.out.println("西瓜已成熟，可以收割嘍");
-			}
-			else if(watermelon_die==true) {    //西瓜已死亡 
-				System.out.println("種植的西瓜已死亡");}
-			else if(watermelon_decay==true) {  //西瓜開始衰敗
-				System.out.println("種植的西瓜開始衰敗了，趕緊收割");}
-			
-			else if(vegetable1.getmulberry_day_planted()==vegetable1.getmulberry_day()) {  //剛好成熟
-				System.out.println("桑樹已成熟，可以收割嘍");
-			}
-			else if(mulberry_die==true) {    //桑樹已死亡 
-				System.out.println("種植的桑樹已死亡");
-			}
-			else if(mulberry_decay==true) {  //桑樹開始衰敗
-				System.out.println("種植的桑數開始衰敗了，趕緊收割");}
-			
-			
-			while(true) {  //重複執行直到玩家選擇睡眠
-				
-				if(player1.getenergy()==0) {player1.sleep();}  //體力=0，進行睡眠
-				
-				if(player1.getmoney()<=0&&player1.getwatermelonplanted()==false&&player1.getmulberryplanted()==false) {break;}  //若破產也無種植植物，則結束遊戲
-				
-				System.out.println("體力值："+player1.getenergy());
-				System.out.println("金錢："+player1.getmoney());	
-				System.out.println("請輸入指令");
-				String[] action=scanner.nextLine().split(" ");
-				if(action[0].equals("water")) {
-					if(action[1].equals("watermelon")) {player1.water_watermelon();environment1.water();if(player1.getenergy()==0) {player1.sleep();}}
-					else if(action[1].equals("mulberry")) {player1.water_mulberry();environment1.water();if(player1.getenergy()==0) {player1.sleep();}}
-					else {System.out.println("植物名輸入錯誤，請重新輸入");}	
-				}
-				
-				else if(action[0].equals("fill")&&action[1].equals("and")&&action[2].equals("loose")) {
-					if(action[3].equals("sand")) {player1.fill_and_loose_sand();environment1.new_change_soil();environment1.setenvironment_moisture();if(player1.getenergy()==0) {player1.sleep();}}
-					else if(action[3].equals("clay")) {player1.fill_and_loose_clay();environment1.new_change_soil();environment1.setenvironment_moisture();if(player1.getenergy()==0) {player1.sleep();}}
-					else if(action[3].equals("loam")) {player1.fill_and_loose_loam();environment1.new_change_soil();environment1.setenvironment_moisture();if(player1.getenergy()==0) {player1.sleep();}}
-					else {System.out.println("土壤名輸入錯誤，請重新輸入");}
-				}
-				
-				else if(action[0].equals("plant")) {
-					if(action[1].equals("watermelon")) {player1.plant_watermelonseed();if(player1.getenergy()==0) {player1.sleep();}}
-					else if(action[1].equals("mulberry")) {player1.plant_mulberryseed();if(player1.getenergy()==0) {player1.sleep();}}
-					else {System.out.println("植物名輸入錯誤，請重新輸入");}
-				}
-				
-				else if(action[0].equals("reap")&&action[1].equals("and")&&action[2].equals("sell")) {
-					if(action[3].equals("watermelon")) {player1.reap_and_sell_watermelon();if(player1.getenergy()==0) {player1.sleep();}}
-					else if(action[3].equals("mulberry")) {player1.reap_and_sell_mulberry();if(player1.getenergy()==0) {player1.sleep();}}
-					else {System.out.println("植物名輸入錯誤，請重新輸入");}
-				}
-				
-				else if(action[0].equals("buy")) {
-					if(action[1].equals("wateringcan")) {
-						player1.buy_wateringcan();
-						}
-					
-					else if(action[1].equals("hoe")) {
-						player1.buy_hoe();
-					    }
-					
-					else if(action[1].equals("sickle")) {
-						player1.buy_sickle();
-						}
-					
-					else if(action[1].equals("watermelon")) {
-						player1.buy_watermelonseed();}
-					
-					else if(action[1].equals("mulberry")) {
-						player1.buy_mulberryseed();}
-					
-					else if(action[1].equals("sand")) {
-						player1.buy_sand();}
-					
-					else if(action[1].equals("clay")) {
-						player1.buy_clay();}
-					
-					else if(action[1].equals("loam")) {
-						player1.buy_loam();}
-					
-					else if(action[1].equals("redbull")) {
-						player1.buy_redbull();}
-					
-					else {System.out.println("商品名輸入錯誤，請重新輸入");}
-				}
-				else if(action[0].equals("drink")) {
-					if(action[1].equals("redbull")) {
-						player1.drink_redbull();
-					}
-					else {System.out.println("輸入有誤，請重新輸入");}
-				}
-				
-				else if(action[0].equals("check")) {player1.check();}
-				
-				else if(action[0].equals("backpack")) {player1.backpack();}
-				
-				else if(action[0].equals("sleep")) {
-					
-					environment1.setmoisture_sleep();
-					player1.sleep();
-					
-					
-					if(player1.getamount_watermelonplanted()==1) {  //有種植西瓜
-						
-						if(environment1.getmoisture_endday()>25||environment1.getmoisture_endday()<15) {  //若結算濕度不合適，則assign 1到watermelon_decay_count的array當天欄位
-							watermelon_decay_count[environment1.getday()]=1;
-							if(vegetable1.getwatermelon_day_planted()>=5) {   //如果種植天數達五天
-								if(watermelon_decay_count[environment1.getday()-4]==1&&watermelon_decay_count[environment1.getday()-3]==1&&watermelon_decay_count[environment1.getday()-2]==1&&watermelon_decay_count[environment1.getday()-1]==1&&watermelon_decay_count[environment1.getday()]==1) {    //檢查是否連續五天濕度都不合適     
-									watermelon_die=true;vegetable1.setwatermelon_day();vegetable1.setwatermelon_day_planted();vegetable1.setamount_watermelonfruit();player1.setwatermelonplanted();
-								}
-								else {watermelon_die=false;}
-								
-							}
-							if(watermelon_die=false) {
-							if(vegetable1.getwatermelon_day_planted()>=3) {   //如果種植天數達三天
-								if(watermelon_decay_count[environment1.getday()-2]==1&&watermelon_decay_count[environment1.getday()-1]==1&&watermelon_decay_count[environment1.getday()]==1) {    //檢查是否連續三天濕度都不合適
-									watermelon_decay=true;vegetable1.watermelon_decay();
-								}
-								
-								else {watermelon_decay=false;}
-						}
-							}
-						}
-						else {watermelon_decay_count[environment1.getday()]=0;} //若結算濕度不合適，則assign 0到watermelon_decay_count的array當天欄位
-					}
-					
-					else if(player1.getamount_mulberryplanted()==1) {  //有種植桑樹
-						if(environment1.getmoisture_endday()>35||environment1.getmoisture_endday()<25) {  //若結算濕度不合適，則assign 1到mulberry_decay_count的array當天欄位
-							mulberry_decay_count[environment1.getday()]=1;
-						if(vegetable1.getmulberry_day_planted()>=5) {   //如果種植天數達五天
-							if(mulberry_decay_count[environment1.getday()-5]==1&&mulberry_decay_count[environment1.getday()-4]==1&&mulberry_decay_count[environment1.getday()-3]==1&&mulberry_decay_count[environment1.getday()-2]==1&&mulberry_decay_count[environment1.getday()-1]==1&&mulberry_decay_count[environment1.getday()]==1) {    //檢查是否連續五天濕度都不合適
-							mulberry_die=true;vegetable1.setmulberry_day();vegetable1.setmulberry_day_planted();vegetable1.setamount_mulberryfruit();player1.setmulberryplanted();
-						}
-						else {mulberry_die=false;}
-							
-						}
-						if(mulberry_die=false) {
-						if(vegetable1.getmulberry_day_planted()>=3) {   //如果種植天數達三天
-								if(mulberry_decay_count[environment1.getday()-2]==1&&mulberry_decay_count[environment1.getday()-1]==1&&mulberry_decay_count[environment1.getday()]==1) {    //檢查是否連續三天濕度都不合適
-									mulberry_decay=true;vegetable1.mulberry_decay();
-								}
-								else {mulberry_decay=false;}
-								
-								
-							}
-						}
-					}
-						else {mulberry_decay_count[environment1.getday()]=0;} //若結算濕度不合適，則assign 0到mulberry_decay_count的array當天欄位
-							}
-					
-					
-					environment1.nextday();   //下一天日期
-					environment1.nextday_moisture();   //設定下一天濕度
-					if(environment1.getday()==101) {nextday=false;}   //天數超過環境的天數，結束遊戲
-					break;
-					}
-				else {System.out.println("指令輸入有誤，請重新輸入");}
-				
-			}
-		
-			
-		}
-		
-		System.out.println("遊戲結束，您共獲得："+player1.getmoney()+"元");
-		
+public class Game{
+ public static void main(String[] args){
+	 Player player = new Player();
+	 Sand sand = new Sand();
+	 Clay clay = new Clay();
+	 Loam loam = new Loam();//construct earth
+	 Wateringcan wateringcan = new Wateringcan();
+	 Hoe hoe = new Hoe();
+	 Sickle sickle = new Sickle();//construct tool
+	 Watermelon watermelon = new Watermelon();
+	 Mulberry mulberry = new Mulberry();//construct seed
+	 int humidity=0;
+	 String Player_name;
+	 System.out.println("Welcome to the Farm");
+	 System.out.println("Please enter your name");
+	 Scanner playername = new Scanner(System.in);
+	 Player_name = playername.nextLine();
+	 player.setName(Player_name);
+	 System.out.println();
+	 System.out.println("Hi, "+Player_name);
+	 System.out.println();
+	 Scanner environment=null;
+	 Scanner instruction=null;
+	 Scanner tips=null;
+	 String str=null;
+	 String ins=null;
+	try{
+		environment = new Scanner(new File("Environment//environment.txt"));
+	}catch(Exception e){
+		System.out.println("File not found");
 	}
 	
+	try{
+		instruction = new Scanner(new File("flow.txt"));
+	}catch(Exception e){
+		System.out.println("File not found");
+	}
+	while(instruction.hasNextLine()){
+		 ins=instruction.nextLine();
+		 System.out.println(ins);
+	 }
+	//int face;
+	//PrintWriter writer=null;
+	/*try{
+		writer = new PrintWriter(new FileOutputStream("Environment//environment.txt",true));
+	}catch(Exception e){
+		System.out.println("File not found");
+	}
 	
-	
-	
-	
-	
+	for(int r=1;r<=100000;r++){
+		face =(int)(Math.random()*4);
+		if(face==0){
+			writer.println("Sunny");
+		}
+		else if (face==1){
+			writer.println("Storm");
+		}
+		else if (face==2){
+			writer.println("Rainy");
+		}
+		else if (face==3){
+			writer.println("Normal");
+		}
+	}*/
+	 labelmain:
+	 for(int Days=1;Days<=100000;Days++){
+		 if(environment.hasNextLine()){
+			 str=environment.nextLine();
+			 if(str.equals("Sunny")){
+				 humidity= -15;
+			 }
+			 else if(str.equals("Storm")){
+				 humidity= 10;
+			 }
+			 else if(str.equals("Normal")){
+				 humidity= -5;
+			 }
+			 else if(str.equals("Rainy")){
+				 humidity= 5;
+			 }
+		 }
+		 else{
+			 System.out.println("No next line");
+			 break labelmain;
+		 }
+		 
+		 //System.out.println(humidity);
+		 labelfileinput:
+		 if(sand.getOnTheFarm()){
+			 sand.setHumidity(sand.getHumidity()+humidity);
+		 }
+		 else if(clay.getOnTheFarm()){
+			 clay.setHumidity(clay.getHumidity()+humidity);
+		 }
+		 else if(loam.getOnTheFarm()){
+			 loam.setHumidity(loam.getHumidity()+humidity);
+		 }
+		 sand.ensureHumidity();
+		 clay.ensureHumidity();
+		 loam.ensureHumidity();
+		 System.out.println("==================================");
+		 System.out.println("It's Day "+Days+". "+"A "+str+" day.");
+		 System.out.println("Your energy: "+player.getEnergy());
+		 System.out.println("Your money : "+player.getMoney());
+		 System.out.println("----------------------------------");
+		 System.out.println("watering can: "+wateringcan.getbuyed()+"("+wateringcan.getEndurance()+"/100)");
+		 System.out.println("hoe         : "+hoe.getbuyed()+"("+hoe.getEndurance()+"/100)");
+		 System.out.println("sickle      : "+sickle.getbuyed()+"("+sickle.getEndurance()+"/100)");
+		 System.out.println("----------------------------------");
+		 System.out.println("watermelon seed : "+watermelon.getQuantity());
+		 System.out.println("mulberry   seed : "+mulberry.getQuantity());
+		 System.out.println("----------------------------------");
+		 System.out.println("sand : "+sand.getQuantity());
+		 System.out.println("clay : "+clay.getQuantity());
+		 System.out.println("loam : "+loam.getQuantity());
+		 System.out.println("==================================");
+		 System.out.println("|  Type  |     Item     |  price |");
+	     System.out.println("==================================");
+	     System.out.println("|  Seed  | watering can |    50  |");
+		 System.out.println("|        |      hoe     |   420  |");
+		 System.out.println("|        |     sickle   |   210  |");
+		 System.out.println("==================================");
+		 System.out.println("|  Tool  |  watermelon  |    10  |");
+		 System.out.println("|        |   mulberry   |     5  |");
+		 System.out.println("==================================");
+		 System.out.println("|  Earth |     sand     |    15  |");
+		 System.out.println("|        |     clay     |    20  |");
+		 System.out.println("|        |     loam     |    20  |");
+		 System.out.println("==================================");
+		 System.out.println();
+		 labelexecution:
+		 for(int execution=1;execution<=100000;execution++){
+			 Scanner scan = new Scanner(System.in);
+			 String scanner = scan.nextLine();
+			 String[] AfterSplit = scanner.split(" ");
+			 int size = AfterSplit.length;
+			 labelswitch:
+			 switch(AfterSplit[0].intern()){
+				 case"water":
+				   if(size!=2){
+					   System.out.println("Error Length");
+					   continue labelexecution;
+				   }
+				   if(wateringcan.getbuyed()==false){
+					   System.out.println("You didn't buy the watering can");
+					   continue labelexecution;
+				   }
+				   if(AfterSplit[1].equals("watermelon")&&watermelon.getInTheEarth()){
+					   player.Watering_sand(sand,wateringcan);
+					   player.Watering_clay(clay,wateringcan);
+					   player.Watering_loam(loam,wateringcan);
+				   }
+				   else if(AfterSplit[1].equals("mulberry")&&mulberry.getInTheEarth()){
+					   player.Watering_sand(sand,wateringcan);
+					   player.Watering_clay(clay,wateringcan);
+					   player.Watering_loam(loam,wateringcan);
+				   }
+				   else{
+					   System.out.println("Error Type or the seed is not in the earth");
+					   continue labelexecution;
+				   }
+				   //when earth on the farm, watering
+				   break;
+				 case"fill":
+				   if(AfterSplit[1].equals("and")&&AfterSplit[2].equals("loosen")){
+					   if(watermelon.getInTheEarth()||mulberry.getInTheEarth()){
+						   System.out.println("The seed is in the earth. You can't fill or loosen");
+						   continue labelexecution;
+					   }
+					   if(hoe.getbuyed()==false){
+						   System.out.println("You didn't buy the hoe");
+						   continue labelexecution;
+					   }
+					   if(size!=4){
+						   System.out.println("Error Length");
+						   continue labelexecution;
+					   }
+					   if(AfterSplit[3].equals("sand")&&sand.getQuantity()>=1){
+						   sand.isOnTheFarm();
+						   player.Fillingandloosening_sand(sand,hoe);
+						   clay.isOffTheFarm();
+						   loam.isOffTheFarm();
+						   if(sand.getOnTheFarm()){
+								 sand.setHumidity(20+humidity);
+							 }
+		               }
+					   else if(AfterSplit[3].equals("clay")&&clay.getQuantity()>=1){
+						   clay.isOnTheFarm();
+						   player.Fillingandloosening_clay(clay,hoe);
+						   loam.isOffTheFarm();
+						   sand.isOffTheFarm();
+						   if(clay.getOnTheFarm()){
+								 clay.setHumidity(20+humidity);
+						   }
+					   }
+					   else if(AfterSplit[3].equals("loam")&&loam.getQuantity()>=1){
+						   loam.isOnTheFarm();
+						   player.Fillingandloosening_loam(loam,hoe);
+						   clay.isOffTheFarm();
+						   sand.isOffTheFarm();
+						   if(loam.getOnTheFarm()){
+								 loam.setHumidity(20+humidity);
+							 }
+					   }
+					   else{
+						   System.out.println("Error Type or there is no earth ");
+						   continue labelexecution;
+					   }
+				   }
+				   else{
+					   System.out.println("Error Type");
+					   continue labelexecution;
+				   }
+				   sand.ensureHumidity();
+		           clay.ensureHumidity();
+		           loam.ensureHumidity();
+				   break labelswitch;
+				 case"plant":
+				   if(watermelon.getInTheEarth()||mulberry.getInTheEarth()){
+					   System.out.println("The seed is in the earth. You can't plant anything now");
+					   continue labelexecution;
+				   }
+				   if(size!=2){
+					   System.out.println("Error Length");
+					   continue labelexecution;
+				   }
+				   if(sand.getOnTheFarm()){
+					   if(AfterSplit[1].equals("watermelon")&&watermelon.getQuantity()>=1&&player.getEnergy()>=15){
+						   watermelon.isInTheEarth();
+						   mulberry.isOffTheEarth();
+						   watermelon.setConti(false);
+						   watermelon.setAccumulate(0);
+						   player.Plant_watermelon(watermelon);
+					   }
+					   else if(AfterSplit[1].equals("mulberry")&&mulberry.getQuantity()>=1&&player.getEnergy()>=15){
+						   mulberry.isInTheEarth();
+						   watermelon.isOffTheEarth();
+						   mulberry.setConti(false);
+						   mulberry.setAccumulate(0);
+						   player.Plant_mulberry(mulberry);
+					   }
+					   else{
+						   System.out.println("No that fruit or you don't have enough energy or seeds");
+					       continue labelexecution;
+					   }
+						   
+				   }
+				   else if(clay.getOnTheFarm()){
+					   if(AfterSplit[1].equals("watermelon")&&watermelon.getQuantity()>=1&&player.getEnergy()>=15){
+						   watermelon.isInTheEarth();
+						   mulberry.isOffTheEarth();
+						   watermelon.setConti(false);
+						   watermelon.setAccumulate(0);
+						   player.Plant_watermelon(watermelon);
+						   watermelon.setDays(watermelon.getDays()-3);
+						   watermelon.setFruits(watermelon.getFruits()-1);
+					   }
+					   else if(AfterSplit[1].equals("mulberry")&&mulberry.getQuantity()>=1&&player.getEnergy()>=15){
+						   mulberry.isInTheEarth();
+						   watermelon.isOffTheEarth();
+						   player.Plant_mulberry(mulberry);
+						   mulberry.setConti(false);
+						   mulberry.setAccumulate(0);
+						   mulberry.setDays(mulberry.getDays()-3);
+						   mulberry.setFruits(mulberry.getFruits()-1);
+					   }
+					   else{
+						   System.out.println("No that fruit or you don't have enough energy or seeds");
+					       continue labelexecution;
+					   }
+				   }
+				   else if(loam.getOnTheFarm()){
+					   if(AfterSplit[1].equals("watermelon")&&watermelon.getQuantity()>=1&&player.getEnergy()>=15){
+						   watermelon.isInTheEarth();
+						   mulberry.isOffTheEarth();
+						   watermelon.setConti(false);
+						   watermelon.setAccumulate(0);
+						   player.Plant_watermelon(watermelon);
+						   watermelon.setDays(watermelon.getDays()+3);
+						   watermelon.setFruits(watermelon.getFruits()+1);
+					   }
+					   else if(AfterSplit[1].equals("mulberry")&&mulberry.getQuantity()>=1&&player.getEnergy()>=15){
+						   mulberry.isInTheEarth();
+						   watermelon.isOffTheEarth();
+						   player.Plant_mulberry(mulberry);
+						   mulberry.setConti(false);
+						   mulberry.setAccumulate(0);
+						   mulberry.setDays(mulberry.getDays()+3);
+						   mulberry.setFruits(mulberry.getFruits()+1);
+					   }
+					   else{
+						   System.out.println("No that fruit or you don't have enough energy or seeds");
+					       continue labelexecution;
+					   }
+				   }
+				   else{
+					   System.out.println("No land on the farm");
+					   System.out.println("Please fill and loosen");
+				   }
+				   
+				   break;
+				 case"reap":
+				   if(size==4){
+					   if(AfterSplit[1].equals("and")&&AfterSplit[2].equals("sell")){
+						   if(sickle.getbuyed()==false){
+							   System.out.println("You didn't buy the sickle");
+							   continue labelexecution;
+						   }
+						   if(AfterSplit[3].equals("watermelon")){
+							   player.Reapingandselling_watermelon(watermelon);
+						   }
+						   else if(AfterSplit[3].equals("mulberry")){
+							   player.Reapingandselling_mulberry(mulberry);
+						   }
+						   else{
+							   System.out.println("No that fruit");
+							   continue labelexecution;
+						   }
+					   }
+					   else{
+						   System.out.println("Wrong Type");
+					       continue labelexecution;
+					   }
+				   }
+				   else{
+					   System.out.println("Wrong length");
+					   continue labelexecution;
+				   }
+				   break;
+				 case"buy":
+				   if(size==2){
+					   switch(AfterSplit[1].intern()){
+						   case"hoe":
+						     player.Buying_hoe(hoe);
+							 break;
+						   case"sickle":
+						     player.Buying_sickle(sickle);
+							 break;
+						   case"watermelon":
+						     player.Buying_watermelon(watermelon);
+							 break;
+						   case"mulberry":
+						     player.Buying_mullberry(mulberry);
+							 break;
+						   case"sand":
+						     player.Buying_sand(sand);
+							 break;
+						   case"clay":
+						     player.Buying_clay(clay);
+							 break;
+						   case"loam":
+						     player.Buying_loam(loam);
+							 break;
+						   default:
+						     System.out.println("Wrong Type");
+							 break;
+					   }
+				   }
+				   else if(size==3){
+					   if(AfterSplit[1].equals("watering")&&AfterSplit[2].equals("can")){
+						   player.Buying_wateringcan(wateringcan);
+					   }
+					   else{
+						   System.out.println("Wrong Type");
+						   continue labelexecution;
+					   }
+				   }
+				   else{
+					   System.out.println("Wrong Type");
+					   continue labelexecution;
+				   }
+				   break;
+				 case"check":
+				   if(size==1){
+					   player.Checking(watermelon,mulberry);
+				   }
+				   else{
+					   System.out.println("Wrong Type");
+				       continue labelexecution;
+				   }
+				   if(sand.getOnTheFarm()){
+					   System.out.println("sand");
+					   System.out.println("Humidity: "+sand.getHumidity());
+				   }
+				   else if(clay.getOnTheFarm()){
+					   System.out.println("clay");
+					   System.out.println("Humidity: "+clay.getHumidity());
+				   }
+				   else if(loam.getOnTheFarm()){
+					   System.out.println("loam");
+					   System.out.println("Humidity: "+loam.getHumidity());
+				   }
+				   break;
+				 case"sleep":
+				   if(size==1){
+					   player.Sleep();
+					   break labelexecution;
+				   }
+				   else{
+					   System.out.println("Wrong Type");
+					   continue labelexecution;
+				   }
+				 case"I":
+				   if(size==5&&AfterSplit[1].equals("am")&&AfterSplit[2].equals("tired")&&AfterSplit[3].equals("of")&&AfterSplit[4].equals("it")){
+					   break labelmain;
+				   }
+				   else{
+					   System.out.println("Wrong Type");
+					   continue labelexecution;
+				   }
+				 case"instruction":
+				     try{
+						tips = new Scanner(new File("flow.txt"));
+					}catch(Exception e){
+						System.out.println("File not found");
+					}
+					 while(tips.hasNextLine()){
+						 ins=tips.nextLine();
+						 System.out.println(ins);
+					 }
+					 continue labelexecution;
+				 default:
+				   System.out.println("Wrong Type");
+				   continue labelexecution;
+			 }
+			 if(player.getEnergy()>100){
+				 player.setEnergy(100);
+			 }
+			 else if(player.getEnergy()<=0){
+				 player.Sleep();
+				 break labelexecution;
+			 }
+			 System.out.println("===================================");
+			 System.out.println("Your energy: "+player.getEnergy());
+			 System.out.println("Your money : "+player.getMoney());
+			 System.out.println("----------------------------------");
+			 System.out.println("watering can: "+wateringcan.getbuyed()+"("+wateringcan.getEndurance()+"/100)");
+			 System.out.println("hoe         : "+hoe.getbuyed()+"("+hoe.getEndurance()+"/100)");
+			 System.out.println("sickle      : "+sickle.getbuyed()+"("+sickle.getEndurance()+"/100)");
+			 System.out.println("----------------------------------");
+			 System.out.println("watermelon seed : "+watermelon.getQuantity());
+			 System.out.println("mulberry   seed : "+mulberry.getQuantity());
+			 System.out.println("----------------------------------");
+			 System.out.println("sand : "+sand.getQuantity());
+			 System.out.println("clay : "+clay.getQuantity());
+			 System.out.println("loam : "+loam.getQuantity());
+             System.out.println("===================================");		
+             System.out.println();		
+			 if(player.bankrupt(watermelon,mulberry)){
+			    break labelmain;
+		     }					 
+		 }//loopexecution
+		 sand.ensureHumidity();
+		 clay.ensureHumidity();
+		 loam.ensureHumidity();
+		 watermelon.DaysDecreasing();
+		 mulberry.DaysDecreasing();
+		 
+		 if(watermelon.getInTheEarth()&&watermelon.getDays()<=0){
+			 watermelon.setDays(0);
+			 System.out.println("Go reap your watermelon now ");
+		 }
+		 else if(mulberry.getInTheEarth()&&mulberry.getDays()<=0){
+			 mulberry.setDays(0);
+			 System.out.println("Go reap your mulberry now ");
+		 }
+		 if(wateringcan.getbuyed()&&wateringcan.getEndurance()==0){
+			 wateringcan.isbuyed(false);
+		 }
+		 else if(hoe.getbuyed()&&hoe.getEndurance()==0){
+			 hoe.isbuyed(false);
+		 }
+		 else if(sickle.getbuyed()&&sickle.getEndurance()==0){
+			 sickle.isbuyed(false);
+		 }
+		 if(player.getEnergy()>100){
+			 player.setEnergy(100);
+		 }
+		 
+		 //whether die
+		 player.WhetherDie(sand,clay,loam,watermelon,mulberry);
+	 }//loopmain
+	 System.out.println("Your final money:"+player.getMoney());
+	 
+ }
 }
